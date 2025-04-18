@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earth Focus - To-Do App</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Samsung+Sans&display=swap" rel="stylesheet">
+  <script>
+    function startFocusTimer() {
+      console.log("Focus Timer started");
+      // Placeholder logic: actual timer logic to be implemented in script.js
+    }
+
+    // Background slideshow logic
+    const bgImages = document.querySelectorAll('.bg-img');
+    let currentIndex = 0;
+
+    setInterval(() => {
+      bgImages[currentIndex].classList.remove('active');
+      currentIndex = (currentIndex + 1) % bgImages.length;
+      bgImages[currentIndex].classList.add('active');
+    }, 10000); // switch every 10 seconds
+  </script>
+</head>
+<body>
+  <div class="background-slideshow">
+    <!-- Updated paths to images stored locally within the project folder -->
+    <img src="Aura_fevercoredreamcore.png" class="bg-img active" onerror="this.style.display='none'" />
+    <img src="dreamcore2.png" class="bg-img" onerror="this.style.display='none'" />
+    <img src="A_digital_gradient_background_image_features_dark_.png" class="bg-img" onerror="this.style.display='none'" />
+    <img src="A_digital_gradient_background_image_features_a_smo.png" class="bg-img" onerror="this.style.display='none'" />
+  </div>
+
+  <div class="app">
+    <header>
+      <h1>🌍 Earth Focus</h1>
+      <div id="points">Earth Points: <span id="earthPoints">0</span></div>
+    </header>
+
+    <main>
+      <!-- Section 1: To-Do List -->
+      <section class="todo-section">
+        <h2>To-Do List</h2>
+        <div class="add-task">
+          <input type="text" id="taskInput" placeholder="Add a new task..." />
+          <select id="taskDifficulty">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+          <button class="fade" onclick="addTask()">Add Task</button>
+        </div>
+        <ul id="taskList"></ul>
+      </section>
+
+      <!-- Section 2: Focus Timer -->
+      <section class="focus-section">
+        <h2>Focus</h2>
+        <div class="timer">
+          <div id="timerDisplay">00:00</div>
+          <div class="plant-container">
+            <img id="plantSVG" src="plant1.svg" alt="Growing Plant" onerror="this.style.display='none'" />
+          </div>
+          <button class="fade" onclick="startFocusTimer()">Start</button>
+        </div>
+      </section>
+
+      <!-- Section 3: Store -->
+      <section class="store-section">
+        <h2>Store</h2>
+        <div class="plant-store" id="plantStore">
+          <!-- Plants will be dynamically loaded here -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

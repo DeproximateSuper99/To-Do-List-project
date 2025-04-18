@@ -1,3 +1,7 @@
+(Made with 💙, Atharva And Aaryan)
+
+
+
 🌍 Earth Focus - Productivity To-Do App
 Earth Focus is a beautifully designed, UI-rich productivity app focused on motivating users through gamified task management and visual growth. It combines task tracking, a Pomodoro-style focus timer, and a reward store—perfect for users who value both productivity and aesthetics.
 ______________________________________________________________

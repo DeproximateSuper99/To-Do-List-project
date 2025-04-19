@@ -3,76 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Earth Focus - To-Do App</title>
+  <title>Earth Focus - Productivity App</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Samsung+Sans&display=swap" rel="stylesheet">
-  <script>
-    function startFocusTimer() {
-      console.log("Focus Timer started");
-      // Placeholder logic: actual timer logic to be implemented in script.js
-    }
-
-    // Background slideshow logic
-    const bgImages = document.querySelectorAll('.bg-img');
-    let currentIndex = 0;
-
-    setInterval(() => {
-      bgImages[currentIndex].classList.remove('active');
-      currentIndex = (currentIndex + 1) % bgImages.length;
-      bgImages[currentIndex].classList.add('active');
-    }, 10000); // switch every 10 seconds
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div class="background-slideshow">
-    <!-- Updated paths to images stored locally within the project folder -->
-    <img src="Aura_fevercoredreamcore.png" class="bg-img active" onerror="this.style.display='none'" />
-    <img src="dreamcore2.png" class="bg-img" onerror="this.style.display='none'" />
-    <img src="A_digital_gradient_background_image_features_dark_.png" class="bg-img" onerror="this.style.display='none'" />
-    <img src="A_digital_gradient_background_image_features_a_smo.png" class="bg-img" onerror="this.style.display='none'" />
+    <!-- Video Background Container -->
+<div class="video-background">
+    <video autoplay muted loop playsinline id="bgVideo">
+      <source src="assets/video1.mp4" type="video/mp4">
+      <!-- Fallback image if video fails -->
+      <img src="assets/bg-nature-1.jpg" alt="Background" style="width:100%;height:100%;object-fit:cover;">
+    </video>
+    <div class="video-overlay"></div>
   </div>
+  
+  <div class="app-container">
+    <!-- Side Navigation -->
+    <nav class="side-nav">
+      <div class="nav-header">
+        <h1>🌍 Earth Focus</h1>
+      </div>
+      <ul class="nav-links">
+        <li data-section="taskSection"><i class="fas fa-list-check"></i> Tasks</li>
+        <li data-section="focusSection"><i class="fas fa-clock"></i> Focus</li>
+        <li data-section="storeSection"><i class="fas fa-store"></i> Store</li>
+        <li data-section="statsSection"><i class="fas fa-chart-line"></i> Stats</li>
+      </ul>
+      <div class="user-profile">
+        <div class="points-display">
+          <span id="earthPoints">0</span> Earth Points
+        </div>
+      </div>
+    </nav>
 
-  <div class="app">
-    <header>
-      <h1>🌍 Earth Focus</h1>
-      <div id="points">Earth Points: <span id="earthPoints">0</span></div>
-    </header>
-
-    <main>
-      <!-- Section 1: To-Do List -->
-      <section class="todo-section">
-        <h2>To-Do List</h2>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- To-Do Section -->
+      <section class="content-section" id="taskSection">
+        <h2><i class="fas fa-list-check"></i> My Tasks</h2>
         <div class="add-task">
-          <input type="text" id="taskInput" placeholder="Add a new task..." />
-          <select id="taskDifficulty">
+          <input type="text" id="taskInput" placeholder="What needs to be done?" />
+          <select id="difficultySelect">
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
           </select>
-          <button class="fade" onclick="addTask()">Add Task</button>
+          <button onclick="addTask()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+        <div class="task-filters">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Active</button>
+          <button class="filter-btn">Completed</button>
         </div>
         <ul id="taskList"></ul>
       </section>
 
-      <!-- Section 2: Focus Timer -->
-      <section class="focus-section">
-        <h2>Focus</h2>
-        <div class="timer">
-          <div id="timerDisplay">00:00</div>
-          <div class="plant-container">
-            <img id="plantSVG" src="plant1.svg" alt="Growing Plant" onerror="this.style.display='none'" />
+      <!-- Focus Timer Section -->
+      <section class="content-section" id="focusSection" style="display:none;">
+        <h2><i class="fas fa-clock"></i> Focus Session</h2>
+        <div class="timer-container">
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <div class="timer-controls">
+            <button class="timer-btn start-btn" onclick="startFocusTimer()">
+              <i class="fas fa-play"></i> Start
+            </button>
+            <button class="timer-btn pause-btn" onclick="pauseTimer()">
+              <i class="fas fa-pause"></i> Pause
+            </button>
+            <button class="timer-btn reset-btn" onclick="resetTimer()">
+              <i class="fas fa-rotate-right"></i> Reset
+            </button>
           </div>
-          <button class="fade" onclick="startFocusTimer()">Start</button>
+          <div class="timer-presets">
+            <button class="preset-btn" data-minutes="25">Pomodoro</button>
+            <button class="preset-btn" data-minutes="15">Short Break</button>
+            <button class="preset-btn" data-minutes="30">Long Break</button>
+          </div>
+        </div>
+        <div class="plant-visual">
+            <img src="./assets/plant-2.svg" alt="Growing Plant" id="plantImage" />
+          <div class="progress-text">Keep going! 3 more sessions to grow your plant</div>
         </div>
       </section>
 
-      <!-- Section 3: Store -->
-      <section class="store-section">
-        <h2>Store</h2>
-        <div class="plant-store" id="plantStore">
-          <!-- Plants will be dynamically loaded here -->
+      <!-- Store Section -->
+      <section class="content-section" id="storeSection" style="display:none;">
+        <h2><i class="fas fa-store"></i> Store</h2>
+        <div class="store-items">
+          <div class="store-item">
+            <div class="item-icon"><i class="fas fa-seedling"></i></div>
+            <h3>Basic Plant</h3>
+            <p>50 Points</p>
+            <button class="buy-btn">Purchase</button>
+          </div>
+          <div class="store-item">
+            <div class="item-icon"><i class="fas fa-tree"></i></div>
+            <h3>Rare Plant</h3>
+            <p>150 Points</p>
+            <button class="buy-btn">Purchase</button>
+          </div>
+          <div class="store-item">
+            <div class="item-icon"><i class="fas fa-spa"></i></div>
+            <h3>Exotic Plant</h3>
+            <p>300 Points</p>
+            <button class="buy-btn">Purchase</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="content-section" id="statsSection" style="display:none;">
+        <h2><i class="fas fa-chart-line"></i> Statistics</h2>
+        <div class="stats-container">
+          <div class="stat-card">
+            <h3>Tasks Completed</h3>
+            <p class="stat-value" id="tasksCompleted">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Focus Sessions</h3>
+            <p class="stat-value" id="focusSessions">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Points</h3>
+            <p class="stat-value" id="totalPoints">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Current Streak</h3>
+            <p class="stat-value" id="currentStreak">0 days</p>
+          </div>
         </div>
       </section>
     </main>

@@ -283,9 +283,9 @@ body {
     background: rgba(255, 255, 255, 0.2);
   }
   
-  .task-difficulty.easy { color: #38a169; }
-  .task-difficulty.medium { color: #d69e2e; }
-  .task-difficulty.hard { color: #e53e3e; }
+  .task-difficulty.Easy { color: #38a169; }
+  .task-difficulty.Medium { color: #d69e2e; }
+  .task-difficulty.Hard { color: #e53e3e; }
   
   .task-delete {
     color: var(--text-light);

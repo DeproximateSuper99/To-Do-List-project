@@ -3,7 +3,7 @@
     /* Original Color Scheme */
     --primary-color: #6d8bff;
     --secondary-color: #ff6d8b;
-    --accent-color: #6dff8b;
+    --accent-color: #00ff95;
     --bg-color: #f5f7fa;
     --card-color: #ffffff;
     --text-color: #2d3748;
@@ -11,10 +11,10 @@
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   
     /* Glassmorphism Additions */
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.18);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    --glass-blur: blur(12px);
+    --glass-bg: rgba(0, 0, 0, 0.300);
+    --glass-border: rgb(255, 255, 255);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.550);
+    --glass-blur: blur(7px);
     --glass-highlight: rgba(255, 255, 255, 0.1);
   }
   
@@ -244,7 +244,7 @@ body {
     border-radius: 20px;
     font-size: 14px;
     cursor: pointer;
-    color: white;
+    color: rgb(0, 0, 0);
     backdrop-filter: blur(5px);
   }
   
@@ -304,7 +304,7 @@ body {
     font-size: 64px;
     font-weight: 300;
     margin: 20px 0;
-    color: white;
+    color: rgba(0, 0, 0, 0.600);
     font-feature-settings: "tnum";
   }
   
@@ -321,7 +321,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: white;
+    color: rgb(255, 255, 255);
     border: none;
     cursor: pointer;
     backdrop-filter: blur(5px);
@@ -509,4 +509,35 @@ body {
       rgba(255,255,255,0.3), 
       rgba(255,255,255,0));
     border-radius: inherit;
+  }
+  #taskSection {
+    /* Dark glass with blur */
+    --glass-bg: rgba(30, 30, 50, 0.3);
+    --glass-border: rgba(100, 100, 150, 0.2);
+    
+    background: var(--glass-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: var(--glass-blur) blur(10px); /* Double blur for depth */
+    -webkit-backdrop-filter: var(--glass-blur) blur(10px);
+    
+    /* Inner glow */
+    box-shadow: 
+      inset 0 0 15px rgba(0, 150, 255, 0.1),
+      0 8px 32px rgba(0, 0, 0, 0.8);
+    
+    /* Content styling */
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Extra blur for task items */
+  #taskList li {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    background: rgba(40, 40, 60, 0.4) !important;
+  }
+  
+  /* Input field styling */
+  #taskInput {
+    background: rgba(20, 20, 30, 0.7) !important;
+    backdrop-filter: blur(3px);
   }

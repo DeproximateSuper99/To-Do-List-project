@@ -1,42 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Earth Focus - Productivity App</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Weather Widget -->
+<div class="weather-widget glass-pill">
+  <div class="weather-info">
+    <i class="fas fa-spinner fa-spin"></i> Loading weather...
+  </div>
+</div>
+
+
 </head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.85, maximum-scale=1.2">
+
+
+<!-- Vertical Glass Panel -->
+<div class="vertical-glass-panel">
+  <div class="spotify-player">
+    <iframe src="https://open.spotify.com/embed/playlist/0i2S0eEdftTrmLKueMWUKX? 10 utm_source=generator"
+            width="100%" 
+            height="450" 
+            frameborder="0" 
+            allowtransparency="true" 
+            allow="encrypted-media"
+            style="border-radius: 12px;">
+    </iframe>
+  </div>
+
+
+  
+</div>
+
+<div class="inspiration-quotes">
+  <div class="quote-container">
+    <p class="quote-text">"The only way to do great work is to love what you do."</p>
+    <p class="quote-author">- Steve Jobs</p>
+  </div>
+</div>
+
 <body>
-    <!-- Video Background Container -->
-<div class="video-background">
+
+
+<header class="app-header">
+  <div class="header-left">
+    <div class="glass-pill">
+      <h1 class="app-title">🌍 Earth Focus</h1>
+      <div class="points-display">
+        <span id="earthPoints">0</span> Earth Points
+      </div>
+    </div>
+  </div>
+  
+  <div class="samsung-clock" id="liveClock">
+    <span class="hours">00</span>:<span class="minutes">00</span>
+    <span class="seconds-container">
+      <span class="seconds">00</span>
+    </span>
+  </div>
+</header>
+  
+  <!-- Video Background Container -->
+  <div class="video-background">
     <video autoplay muted loop playsinline id="bgVideo">
-      <source src="assets/video1.mp4" type="video/mp4">
-      <!-- Fallback image if video fails -->
-      <img src="assets/bg-nature-1.jpg" alt="Background" style="width:100%;height:100%;object-fit:cover;">
+      <source src="assets/backgrounds/video10.mp4" type="video/mp4">
+      <img src="assets/bg-nature-1.jpg" alt="Background">
     </video>
     <div class="video-overlay"></div>
   </div>
   
   <div class="app-container">
-    <!-- Side Navigation -->
+    <!-- bottom nav Navigation -->
     <nav class="side-nav">
       <div class="nav-header">
-        <h1>🌍 Earth Focus</h1>
+        
       </div>
       <ul class="nav-links">
-        <li data-section="taskSection"><i class="fas fa-list-check"></i> Tasks</li>
-        <li data-section="focusSection"><i class="fas fa-clock"></i> Focus</li>
-        <li data-section="storeSection"><i class="fas fa-store"></i> Store</li>
-        <li data-section="statsSection"><i class="fas fa-chart-line"></i> Stats</li>
+        
       </ul>
       <div class="user-profile">
-        <div class="points-display">
-          <span id="earthPoints">0</span> Earth Points
-        </div>
+        
       </div>
     </nav>
 
@@ -47,11 +99,17 @@
         <h2><i class="fas fa-list-check"></i> My Tasks</h2>
         <div class="add-task">
           <input type="text" id="taskInput" placeholder="What needs to be done?" />
-          <select id="difficultySelect">
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-          </select>
+          <div class="custom-select">
+            <div class="select-trigger">
+              <span id="selectedDifficulty">Easy</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="select-options">
+              <div class="option easy" data-value="easy">Easy</div>
+              <div class="option medium" data-value="medium">Medium</div>
+              <div class="option hard" data-value="hard">Hard</div>
+            </div>
+          </div>
           <button onclick="addTask()"><i class="fas fa-plus"></i> Add</button>
         </div>
         <div class="task-filters">
@@ -85,33 +143,16 @@
           </div>
         </div>
         <div class="plant-visual">
-            <img src="./assets/plant-2.svg" alt="Growing Plant" id="plantImage" />
+          <img src="./assets/plant-2.svg" alt="Growing Plant" id="plantImage" />
           <div class="progress-text">Keep going! 3 more sessions to grow your plant</div>
         </div>
       </section>
 
       <!-- Store Section -->
       <section class="content-section" id="storeSection" style="display:none;">
-        <h2><i class="fas fa-store"></i> Store</h2>
-        <div class="store-items">
-          <div class="store-item">
-            <div class="item-icon"><i class="fas fa-seedling"></i></div>
-            <h3>Basic Plant</h3>
-            <p>50 Points</p>
-            <button class="buy-btn">Purchase</button>
-          </div>
-          <div class="store-item">
-            <div class="item-icon"><i class="fas fa-tree"></i></div>
-            <h3>Rare Plant</h3>
-            <p>150 Points</p>
-            <button class="buy-btn">Purchase</button>
-          </div>
-          <div class="store-item">
-            <div class="item-icon"><i class="fas fa-spa"></i></div>
-            <h3>Exotic Plant</h3>
-            <p>300 Points</p>
-            <button class="buy-btn">Purchase</button>
-          </div>
+        <h2><i class="fas fa-video"></i> Video Backgrounds</h2>
+        <div class="video-store">
+          <!-- Video items will be populated by JavaScript -->
         </div>
       </section>
 
@@ -138,6 +179,24 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-container">
+      <div class="nav-icon" data-section="taskSection">
+        <i class="fas fa-list-check"></i>
+      </div>
+      <div class="nav-icon" data-section="focusSection">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="nav-icon" data-section="storeSection">
+        <i class="fas fa-store"></i>
+      </div>
+      <div class="nav-icon" data-section="statsSection">
+        <i class="fas fa-chart-line"></i>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>

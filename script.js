@@ -42,6 +42,8 @@ const videoBackgrounds = [
 
 // Initialize the app
 function init() {
+
+
   renderTasks();
   updatePointsDisplay();
   updateTimerDisplay();
@@ -55,10 +57,22 @@ function init() {
   setupTaskFilters();
   initClock();
   fetchWeather();
+  checkScreenSize();
+  startWeatherUpdates();
+  initWelcomeScreen();
+  WorkMeter.init();
+
+
+
+   const weatherIcon = document.querySelector('.dynamic-icon');
+  weatherIcon.style.backgroundImage = 'url()'; // Add a loading spinner icon
   
+  // Fetch weather after slight delay to let other elements load
+  setTimeout(fetchWeather, 500);
+
   // Set initial difficulty display
   selectedDifficulty.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
-  
+
   // Set initial task section state
   const taskSection = document.getElementById('taskSection');
   if (tasks.length > 0) {
@@ -73,6 +87,12 @@ function init() {
 }
 
 
+
+
+
+
+
+
 // Pause playback when panel hides
 document.addEventListener('sectionChanged', (e) => {
   const iframe = document.querySelector('.spotify-player iframe');
@@ -80,6 +100,271 @@ document.addEventListener('sectionChanged', (e) => {
     iframe.contentWindow.postMessage({command: 'pause'}, '*');
   }
 });
+
+
+//make the vertical panel glass locked in when pressed F11 for FS//
+document.addEventListener('fullscreenchange', lockPanelPosition);
+document.addEventListener('webkitfullscreenchange', lockPanelPosition);
+document.addEventListener('mozfullscreenchange', lockPanelPosition);
+
+function lockPanelPosition() {
+  const panel = document.querySelector('.vertical-glass-panel');
+  if (document.fullscreenElement) {
+    // Fullscreen entered
+    panel.style.position = 'fixed';
+    panel.style.top = '130px';
+    panel.style.bottom = 'auto';
+    panel.style.height = 'calc(100vh - 330px)';
+  } else {
+    // Fullscreen exited
+    panel.style.position = 'fixed';
+    panel.style.top = '130px';
+    panel.style.bottom = '200px';
+    panel.style.height = 'auto';
+  }
+}
+ 
+
+
+
+
+// Welcome Screen Control
+function initWelcomeScreen() {
+  const welcomeOverlay = document.querySelector('.welcome-overlay');
+  const enterBtn = document.querySelector('.enter-site-btn');
+  setTimeout(() => {
+  document.querySelector('.welcome-overlay').classList.add('hidden');
+}, 5000);
+  
+  // Check if user has visited before
+  if (!sessionStorage.getItem('hasVisited')) {
+    // First visit - show welcome
+    welcomeOverlay.style.display = 'flex';
+    
+    enterBtn.addEventListener('click', () => {
+      anime({
+        targets: welcomeOverlay,
+        opacity: 0,
+        duration: 800,
+        easing: 'easeInOutQuad',
+        complete: () => {
+          welcomeOverlay.style.display = 'none';
+          sessionStorage.setItem('hasVisited', 'true');
+        }
+      });
+    });
+  } else {
+    welcomeOverlay.style.display = 'none';
+  }
+}
+
+
+
+// Work Meter System
+const WorkMeter = {
+  progress: 0,
+  lastReset: null,
+  streaks: 0,
+
+  init() {
+    this.loadProgress();
+    this.checkDailyReset();
+       this.checkStreakExpiry();
+    setInterval(() => this.checkStreakExpiry(), 60 * 60 * 1000); // Check hourly
+
+  },
+
+  loadProgress() {
+    const saved = localStorage.getItem('workMeter');
+    if (saved) {
+      const data = JSON.parse(saved);
+      this.progress = data.progress;
+      this.streaks = data.streaks || 0;
+      this.lastReset = new Date(data.lastReset);
+      this.updateDisplay();
+    } else {
+      this.resetProgress();
+    }
+  },
+
+
+
+  checkStreakExpiry() {
+    const now = new Date();
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+    // Reset streaks if inactive for 24 hours
+    if (this.lastStreakTime && (now - new Date(this.lastStreakTime)) > TWENTY_FOUR_HOURS) {
+      this.streaks = 0;
+      this.saveProgress();
+      this.updateDisplay();
+      
+      // Visual feedback
+      document.querySelector('.streak-counter').classList.add('streak-expired');
+      setTimeout(() => {
+        document.querySelector('.streak-counter').classList.remove('streak-expired');
+      }, 2000);
+    }
+  },
+
+  checkDailyReset() {
+    const now = new Date();
+    if (!this.lastReset || now.toDateString() !== this.lastReset.toDateString()) {
+      this.resetProgress();
+    }
+  },
+
+  addProgress(difficulty) {
+    const values = { easy: 5, medium: 10, hard: 15 };
+    const increment = values[difficulty] || 0;
+    
+    // Special animation for fill-ups
+    const willFill = (this.progress + increment) >= 100;
+    
+    this.progress = Math.min(100, this.progress + increment);
+    
+    if (this.progress >= 100) {
+      this.handleFullMeter();
+    }
+    
+    this.saveProgress();
+    this.updateDisplay();
+    
+    // Visual feedback
+    anime({
+      targets: '.work-meter-progress',
+      scaleX: [1, willFill ? 1.1 : 1.05, 1],
+      duration: willFill ? 600 : 300,
+      easing: willFill ? 'spring(1, 100, 10, 0)' : 'easeOutQuad'
+    });
+  },
+
+  handleFullMeter() {
+    this.streaks++;
+    this.progress = 0;
+    
+    // Celebration effect
+    this.celebrateStreak();
+    
+    // Update localStorage
+    this.saveProgress();
+  },
+
+  celebrateStreak() {
+    // Update display immediately
+    this.updateDisplay();
+    
+    // Animation sequence
+    anime.timeline({
+      targets: '.streak-counter',
+      easing: 'spring(1, 80, 10, 0)'
+    })
+    .add({
+      scale: [1, 1.5, 1],
+      color: ['#ff9d00', '#ff5e00', '#ff9d00'],
+      duration: 800
+    });
+    
+    // Particle effect
+    for (let i = 0; i < 20; i++) {
+      this.createFireParticle();
+    }
+  },
+
+  createFireParticle() {
+    const particle = document.createElement('div');
+    particle.innerHTML = '🔥';
+    particle.style.position = 'absolute';
+    particle.style.fontSize = `${Math.random() * 10 + 10}px`;
+    particle.style.left = `${Math.random() * 100}%`;
+    particle.style.top = '0';
+    particle.style.opacity = '0';
+    particle.style.zIndex = '1000';
+    document.querySelector('.work-meter-container').appendChild(particle);
+    
+    anime({
+      targets: particle,
+      translateY: [0, -Math.random() * 50 - 30],
+      translateX: [0, (Math.random() - 0.5) * 40],
+      opacity: [0, 1, 0],
+      scale: [0.5, 1.2, 0],
+      duration: 1500,
+      easing: 'easeOutExpo',
+      complete: () => particle.remove()
+    });
+  },
+
+  updateDisplay() {
+    const progressBar = document.querySelector('.work-meter-progress');
+    const streakCounter = document.querySelector('.streak-counter');
+    
+    progressBar.style.width = `${this.progress}%`;
+    streakCounter.textContent = `${this.streaks} streak${this.streaks !== 1 ? 's' : ''} 🔥`;
+    
+    // Visual intensity based on streaks
+    streakCounter.style.textShadow = 
+      this.streaks > 0 ? `0 0 ${Math.min(10, this.streaks)}px #ff9d00` : 'none';
+  },
+
+  saveProgress() {
+    localStorage.setItem('workMeter', JSON.stringify({
+      progress: this.progress,
+      streaks: this.streaks,
+      lastReset: this.lastReset
+    }));
+  }
+};
+
+
+
+
+function checkScreenSize() {
+  const overlay = document.querySelector('.fullscreen-overlay');
+  const isTooSmall = window.innerWidth < 1024 || window.innerHeight < 768;
+  if (isTooSmall) {
+    overlay.style.display = 'flex';
+    setTimeout(() => {
+      overlay.classList.add('show');
+    }, 10); // Small timeout to allow display to apply first
+  } else {
+    overlay.classList.remove('show');
+    setTimeout(() => {
+      if (!overlay.classList.contains('show')) {
+        overlay.style.display = 'none';
+      }
+    }, 500); // Match this with CSS transition duration
+  }
+  overlay.style.display = isTooSmall ? 'flex' : 'none';
+  document.body.style.overflow = isTooSmall ? 'hidden' : '';
+}
+
+// Fullscreen button handler
+document.querySelector('.enter-fullscreen-btn').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.error('Fullscreen error:', err);
+    });
+  }
+});
+
+// Fullscreen change listener
+document.addEventListener('fullscreenchange', checkScreenSize);
+
+// Window resize listener (with debounce)
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(checkScreenSize, 200);
+});
+
+
+
+
+
+
+
+
+
 
 
 
@@ -205,11 +490,26 @@ function setupNavigation() {
       const sectionId = this.getAttribute('data-section');
       const sectionToShow = document.getElementById(sectionId);
 
-        if (sectionId === 'taskSection') {
-        document.body.classList.add('show-vertical-panel');
-      } else {
-        document.body.classList.remove('show-vertical-panel');
-      }
+        const panel = document.querySelector('.vertical-glass-panel');
+      if (sectionId === 'taskSection') {
+  document.body.classList.add('show-vertical-panel');
+  anime({
+    targets: ['.vertical-glass-panel', '.inspiration-quotes'],
+    translateX: 0,
+    opacity: 1,
+    duration: 300,
+    easing: 'easeOutQuad'
+  });
+} else {
+  document.body.classList.remove('show-vertical-panel');
+  anime({
+    targets: ['.vertical-glass-panel', '.inspiration-quotes'],
+    translateX: -120,
+    opacity: 0,
+    duration: 200,
+    easing: 'easeInQuad'
+  });
+}
 
 
       // Get the currently visible section
@@ -242,6 +542,16 @@ function setupNavigation() {
   if (defaultActive && defaultActive.getAttribute('data-section') === 'taskSection') {
     document.body.classList.add('show-vertical-panel');
   }
+
+
+  // ===== FIX 2: Ensure panel is visible on initial load =====
+    anime({
+      targets: '.vertical-glass-panel',
+      translateX: 0,
+      opacity: 1,
+      duration: 0 // Instant transition for initial load
+    });
+  
   
   // Show tasks section by default
   document.querySelector('.nav-icon[data-section="taskSection"]').classList.add('active');
@@ -301,6 +611,7 @@ function addTask() {
   
   taskInput.value = '';
   taskInput.focus();
+  
 }
 
 function animateInputError() {
@@ -356,6 +667,10 @@ function toggleTaskCompletion(taskId) {
     } else {
       earthPoints = Math.max(0, earthPoints - points);
       completedTasks = Math.max(0, completedTasks - 1);
+    }
+
+    if (task.completed) {
+    WorkMeter.addProgress(task.difficulty);
     }
     
     saveTasks();
@@ -464,6 +779,23 @@ function updatePointsDisplay() {
 }
 
 // Timer Functions
+function setupTimerPresets() {
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const minutes = parseInt(this.getAttribute('data-minutes'));
+      setTimerPreset(minutes);
+      
+      // Animation for button press
+      anime({
+        targets: this,
+        scale: [0.9, 1],
+        duration: 200,
+        easing: 'easeOutBack'
+      });
+    });
+  });
+}
+
 function setupTimerPresets() {
   document.querySelectorAll('.preset-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -621,8 +953,10 @@ function timerCompleted() {
       }, 3000);
     }
   });
-  
-  resetTimer();
+
+  const minutes = timerMinutes; // Your timer duration (e.g., 25 for Pomodoro)
+  WorkMeter.addFocusTime(minutes);
+
 }
 
 function setTimerPreset(minutes) {
@@ -890,57 +1224,7 @@ function renderFilteredTasks(filteredTasks) {
 
 
 
-// Inspirational quotes data
-const quotes = [
-  {
-    text: "The only way to do great work is to love what you do.",
-    author: "Steve Jobs"
-  },
-  {
-    text: "Productivity is being able to do things that you were never able to do before.",
-    author: "Franz Kafka"
-  },
-  {
-    text: "Focus on being productive instead of busy.",
-    author: "Tim Ferriss"
-  },
-  {
-    text: "Your time is limited, so don't waste it living someone else's life.",
-    author: "Steve Jobs"
-  },
-  {
-    text: "The key is not to prioritize what's on your schedule, but to schedule your priorities.",
-    author: "Stephen Covey"
-  }
-];
 
-// Quote rotation system
-let currentQuoteIndex = 0;
-const quoteElement = document.querySelector('.quote-text');
-const authorElement = document.querySelector('.quote-author');
-const quoteContainer = document.querySelector('.quote-container');
-
-function showRandomQuote() {
-  // Fade out current quote
-  quoteContainer.classList.remove('show');
-  
-  setTimeout(() => {
-    // Get new random quote (different from current)
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * quotes.length);
-    } while (quotes.length > 1 && newIndex === currentQuoteIndex);
-    
-    currentQuoteIndex = newIndex;
-    
-    // Update quote content
-    quoteElement.textContent = `"${quotes[currentQuoteIndex].text}"`;
-    authorElement.textContent = `- ${quotes[currentQuoteIndex].author}`;
-    
-    // Fade in new quote
-    quoteContainer.classList.add('show');
-  }, 1500); // Match this with CSS transition time
-}
 
 
 
@@ -982,38 +1266,82 @@ async function getWeatherData(lat, lon) {
   return await response.json();
 }
 
-function updateWeatherDisplay(data) {
-  const weatherWidget = document.querySelector('.weather-info');
-  const iconCode = data.weather[0].icon;
-  const temp = Math.round(data.main.temp);
-  const city = data.name;
-  
-  weatherWidget.innerHTML = `
-    <img src="https://openweathermap.org/img/wn/${iconCode}.png" class="weather-icon" alt="Weather icon">
-    <span class="weather-temp">${temp}°C</span>
-    <span class="weather-city">${city}</span>
-  `;
+
+
+function getWeatherDescription(code) {
+  const weatherTypes = {
+    200: 'Thunderstorm',
+    300: 'Drizzle',
+    500: 'Rain',
+    600: 'Snow',
+    700: 'Atmosphere',
+    800: 'Clear',
+    801: 'Clouds'
+  };
+  return weatherTypes[Math.floor(code/100)*100] || 'Unknown';
 }
 
-// Initialize weather when app starts
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(fetchWeather, 1000); // Small delay to let other elements load first
-});
+
+function updateWeatherDisplay(data) {
+  console.log("Full API response:", data); // Debug
+  
+  const weatherIcon = document.querySelector('.dynamic-icon');
+  const tempDisplay = document.querySelector('.weather-temp');
+  const cityDisplay = document.querySelector('.weather-city');
+
+  // Reset classes
+  weatherIcon.className = 'dynamic-icon';
+  
+  const weatherCode = data.weather[0].id;
+  const weatherMain = data.weather[0].main.toLowerCase();
+  const weatherDesc = data.weather[0].description.toLowerCase();
+  const temp = Math.round(data.main.temp);
+  const city = data.name;
+
+  console.log(`Weather: ${weatherMain} (${weatherCode}), Desc: ${weatherDesc}`); // Debug
+
+  // Clear weather types
+  if (weatherCode >= 200 && weatherCode < 300) {
+    weatherIcon.classList.add('weather-thunder');
+  } else if ((weatherCode >= 300 && weatherCode < 600) || weatherMain.includes('rain')) {
+    weatherIcon.classList.add('weather-rain');
+  } else if (weatherCode >= 600 && weatherCode < 700) {
+    weatherIcon.classList.add('weather-snow');
+  } else if ((weatherCode >= 700 && weatherCode < 800) || weatherDesc.includes('fog') || weatherDesc.includes('mist')) {
+    weatherIcon.classList.add('weather-fog');
+  } else if (weatherCode === 800) {
+    weatherIcon.classList.add('weather-clear');
+  } else if (weatherCode > 800 || weatherMain.includes('cloud')) {
+    weatherIcon.classList.add('weather-clouds');
+  } else {
+    console.warn("Unknown weather condition, defaulting to clear");
+    weatherIcon.classList.add('weather-clear');
+  }
+
+  tempDisplay.textContent = `${temp}°C`;
+  cityDisplay.textContent = city;
+
+  // Verify the final class
+  console.log("Applied class:", weatherIcon.classList.toString());
+  console.log("Current background image:", window.getComputedStyle(weatherIcon).backgroundImage);
+}
+
+
+// Update weather every 30 minutes
+function startWeatherUpdates() {
+  fetchWeather();
+  setInterval(fetchWeather, 30 * 60 * 1000);
+}
 
 
 
-// Initialize
-quoteContainer.classList.add('show');
-setInterval(showRandomQuote, 300000); // Change every 5 minutes (300000ms)
 
-// Start first rotation after initial display
-setTimeout(showRandomQuote, 300000);
+
 
 
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', init);
-
 // Expose functions to global scope
 window.addTask = addTask;
 window.startFocusTimer = startFocusTimer;

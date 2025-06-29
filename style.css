@@ -180,7 +180,7 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
   transform: translateY(20px);
-  position: relative;
+  position: fixed;
   overflow: hidden;
 }
 .content-section.visible {
@@ -222,7 +222,7 @@ body {
 .add-task input {
   flex-grow: 1;
   padding: 15px 16px;
-  background: rgba(125, 125, 125, 0.418);
+  background: rgba(255, 255, 255, 0.171);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   font-size: 14px;
@@ -659,9 +659,8 @@ body {
 /* Bottom Navigation */
 .bottom-nav-container {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 35px;
+  left: 20px; /* Changed from left: 50% + transform */
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -670,8 +669,31 @@ body {
   border-radius: 50px;
   padding: 12px 24px;
   display: flex;
-  gap: 30px;
+  gap: 22px;  /*modify this to change the overall wideness :) */
   z-index: 1000;
+  transform: none; /* Remove the translateX transform */
+  width: auto; /* Let it size naturally */
+}
+
+
+.bottom-nav-container:hover {
+  background: rgba(203, 203, 203, 0.15);
+  transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.emoji-icon {
+  font-size: 24px;
+  line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.nav-icon.active {
+  transform: translateY(-5px) scale(1.1);
+}
+
+/* Remove Font Awesome icon styles if they exist */
+.nav-icon i {
+  display: none;
 }
 
 
@@ -1003,6 +1025,7 @@ body {
   overflow: visible; /* Changed from auto */
 }
 
+
 #taskSection.expanded {
   min-height: var(--expanded-height);
 }
@@ -1131,9 +1154,14 @@ body {
   padding-top: 0 !important; /* Remove extra padding */
 }
 
+
+
+/*MAIN TASK SECTION ADJUSTMENT*/
 #taskSection {
+  position: fixed !important;
   margin-top: -10px !important; /* Pull up further */
   padding-top: 10px !important; /* Reduce inner padding */
+  margin-left: 50px !important;
 }
 
 /* For mobile */
@@ -1150,11 +1178,11 @@ body {
 /* Vertical Glass Panel */
 .vertical-glass-panel {
   position: fixed;
-  top: 130px;    /* Starts below the earth focus pill */
+  top: 300px;    /* Starts below the earth focus pill */
   bottom: 200px; 
   left: 20px;
   width: 310px;
-  height: auto; /* Adjust based on your layout */
+  height: calc(100vh - 330px); /* Adjust based on your layout */
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -1165,8 +1193,14 @@ body {
   overflow: visible;
   transition: all 0.3s ease;
   display: none; /* Hidden by default */
-  transform: translateX(-80px);
-  transition: transform 0.3s ease, opacity 0.2s ease;
+
+  transform: none !important; /* Disable any transforms */
+  transition: none !important; /* Disable transitions during fullscreen */
+  will-change: auto !important;
+
+
+  transition: transform 0.3s ease, opacity 0.3s ease !important;
+  will-change: transform, opacity;
 
   position: fixed;
   top: var(--panel-top);
@@ -1175,13 +1209,9 @@ body {
   width: var(--panel-width);
 
 
-  
 }
-body.show-vertical-panel .vertical-glass-panel {
-  transform: translateX(0);
 
 
-}
 
 /* Grain effect */
 .vertical-glass-panel::before {
@@ -1210,80 +1240,29 @@ body.show-vertical-panel .vertical-glass-panel {
 }
 
 /* Hide panel and reset margin in other sections */
-body:not(.show-vertical-panel) .main-content {
-  margin-left: 0;
-}
 
 
-/* Inspiration Quotes */
-.inspiration-quotes {
-  position: fixed;
-  left: 33px;
-  bottom: 170px;
-  top: 650px;
-  width: 290px;
-  height: auto;
-  z-index: 95;
-  display: flex;
-  align-items: center;
-}
 
-.quote-container {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(5px);
-  border-radius: 12px;
-  padding: 12px 15px;
-  width: 100%;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-}
 
-.quote-text {
-  font-family: 'Baloo 2', cursive;
-  font-size: 14px;
-  color: rgb(255, 255, 255);
-  margin-bottom: 4px;
-  line-height: 1.3;
-}
-
-.quote-author {
-  font-family: 'Baloo 2', cursive;
-  font-size: 12px;
-  color: var(--accent-color);
-  text-align: right;
-  font-style: italic;
-}
-
-/* Show first quote */
-.quote-container.show {
-  opacity: 1;
-}
-
-/* Responsive adjustment */
-@media (max-width: 768px) {
-  .inspiration-quotes {
-    width: calc(100% - 40px);
-    left: 20px;
-    right: 20px;
-  }
-}
 
 
 /* Spotify Player Styles */
 .spotify-player {
-  padding: 15px;
-  padding-bottom: 0;
-  animation: fadeIn 0.8s ease-out;
+  width: 100%; /* Already set - keeps it responsive */
+  max-width: none; /* Remove any max-width constraints */
+  padding: 18px 10px; /* Adjust padding if needed */
 }
 
-.spotify-container iframe {
-  height: min(352px, 30vh); /* Caps height */
+.spotify-player iframe {
+  width: 100% !important; /* Force full width */
+  max-width: 100% !important; /* Remove max-width restrictions */
+  margin: 0 auto; /* Center if needed */
 }
-
 
 .vertical-glass-panel {
   width: 300px; /* Wider to accommodate player */
-  height: calc(100vh - 243px);
+  position: fixed;
+  height: 490px;
   display: flex;
   flex-direction: column;
 }
@@ -1345,6 +1324,10 @@ body:not(.show-vertical-panel) .main-content {
 
 
 
+
+
+
+
 /* Weather Widget Styles */
 .weather-widget {
   position: fixed;
@@ -1391,6 +1374,471 @@ body:not(.show-vertical-panel) .main-content {
 
 
 
+/* Update your weather icon styles */
+.weather-icon-container {
+  width: 55px; /* Match your design */
+  height: 55px;
+  position: relative;
+}
+
+/* Weather icon states */
+.dynamic-icon {
+  /* Base styles */
+  width: 55px;
+  height: 55px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: background-image 0.5s ease;
+}
+
+/* Specific weather states */
+.weather-clear {
+  background-image: url('assets/weather-icons/clear.png');
+  animation: pulse 2s infinite alternate;
+}
+
+.weather-clouds {
+  background-image: url('assets/weather-icons/clouds.png');
+  animation: float 3s infinite ease-in-out;
+}
+
+.weather-rain {
+  background-image: url('assets/weather-icons/rain.png');
+  animation: rainDrop 1.5s infinite linear;
+}
+
+.weather-thunder {
+  background-image: url('assets/weather-icons/thunder.png');
+  animation: flash 0.5s infinite alternate;
+}
+
+.weather-snow {
+  background-image: url('assets/weather-icons/snow.png');
+  animation: float 3s infinite ease-in-out;
+}
+
+.weather-fog {
+  background-image: url('assets/weather-icons/fog.png');
+  opacity: 0.8;
+}
+
+
+
+
+
+
+/* Make sure images are loading */
+.weather-clear { background-image: url('assets/weather-icons/clear.png') !important; }
+.weather-clouds { background-image: url('assets/weather-icons/clouds.png') !important; }
+.weather-rain { background-image: url('assets/weather-icons/rain.png') !important; }
+.weather-thunder { background-image: url('assets/weather-icons/thunder.png') !important; }
+
+
+
+
+
+
+
+
+
+
+/* Add more weather states as needed (snow, thunder, etc.) */
+
+/* Animation keyframes */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes rainDrop {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+
+
+
+
+
+
+
+
+
+
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.9);
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  
+}
+
+.overlay-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.3;
+}
+
+.overlay-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  max-width: 80%;
+}
+
+.overlay-content h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.overlay-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.enter-fullscreen-btn {
+  background: var(--glass-bg);
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.enter-fullscreen-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Show overlay when window is too small */
+@media (max-width: 1024px), (max-height: 768px) {
+  .fullscreen-overlay {
+    display: flex;
+  }
+  
+  /* Hide main content */
+  .app-container, .bottom-nav-container, .app-header {
+    display: none !important;
+  }
+}
+
+.fullscreen-overlay {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.fullscreen-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Update the media query */
+@media (max-width: 1024px), (max-height: 768px) {
+  .fullscreen-overlay {
+    display: flex;
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; visibility: hidden; }
+    to { opacity: 1; visibility: visible; }
+  }
+
+}
+
+
+@keyframes fadeOut {
+  from { opacity: 1; visibility: visible; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+.fullscreen-overlay.hide {
+  animation: fadeOut 0.5s ease forwards;
+}
+
+
+
+
+
+
+
+
+
+
+/* Welcome Overlay Styles */
+.welcome-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+
+.welcome-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome-message {
+  text-align: center;
+  animation: fadeInUp 1s ease;
+}
+
+.welcome-message h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 4rem;
+  color: white;
+  margin-bottom: 2rem;
+  text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  letter-spacing: 2px;
+}
+
+.enter-site-btn {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1px;
+}
+
+.enter-site-btn:hover {
+  background: white;
+  color: black;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Work Meter Styles */
+.work-meter-container {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  position: fixed;
+  bottom: 107px; /* Distance from bottom of parent */
+  left: 12.5%;/*make it go left or right*/
+  transform: translateX(-50%);
+  padding: 15px;  /*vertical width dude T_T*/
+  width: 20%; /* Relative to parent */
+  overflow: visible;
+
+}
+
+
+.work-meter-container::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 15px;
+  background: radial-gradient(
+    circle at center,
+    rgba(138, 43, 226, 0.15) 0%,
+    rgba(138, 43, 226, 0) 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Activate glow reflection when progress changes */
+.work-meter-container.glow-effect::after {
+  opacity: 1;
+  animation: pulse-glow 2s infinite alternate;
+}
+
+
+@keyframes pulse-glow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+
+
+
+.work-meter-header {
+  font-family: 'Baloo 2', cursive;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10px;
+  text-transform: lowercase;
+  letter-spacing: 1px;
+}
+
+.work-meter-bar {
+  background: rgba(0, 0, 0, 0.7);
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.work-meter-progress {
+  height: 100%;
+  width: 0%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, 
+    #9043fc 0%, 
+    #b248f8 50%, 
+    #fb0dfb 100%);
+  position: relative;
+  transition: width 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+  
+  /* Glow Core */
+  box-shadow: 
+    0 0 10px rgba(138, 43, 226, 0.8),
+    0 0 20px rgba(138, 43, 226, 0.6),
+    0 0 30px rgba(138, 43, 226, 0.3);
+}
+
+/* Bloom effect */
+.work-meter-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    transparent 70%);
+  opacity: 0.3;
+}
+
+
+
+
+/* Streak Counter Styles */
+.streak-counter {
+  font-family: 'Baloo 2', cursive;
+  font-size: 13px;
+  color: #ff9d00;
+  margin-left: auto;
+  background: rgba(255, 157, 0, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  animation: streak-pulse 2s infinite;
+}
+@keyframes streak-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; text-shadow: 0 0 8px #ff9d00; }
+}
+
+/* Updated Header Layout */
+.work-meter-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+
+
+/* Streak Expiry Animation */
+.streak-expired {
+  animation: streak-fade 2s ease forwards;
+}
+
+@keyframes streak-fade {
+  0% { 
+    color: #ff9d00;
+    transform: scale(1);
+  }
+  50% {
+    color: #ff3c00;
+    transform: scale(1.1);
+  }
+  100% {
+    color: rgba(255, 255, 255, 0.5);
+    transform: scale(0.95);
+  }
+}
+
+/* Countdown Indicator */
+.streak-counter::after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff00;
+  margin-left: 5px;
+  box-shadow: 0 0 5px #00ff00;
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* When streak is about to expire */
+.streak-counter.expiring::after {
+  background: #ff5555;
+  box-shadow: 0 0 5px #ff5555;
+}
 
 
 
